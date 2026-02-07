@@ -1,0 +1,77 @@
+{% load static %}
+<html>
+    <head></head>
+    <body>
+        <p id="SignInError"></p>
+
+        <div class="wrapper">
+            <div class="background-image"></div>
+
+            <div class="form-container">
+                <div class="register-box">
+                    <h1>Sign In</h1>
+                    <input type="text" id="username" placeholder="Username">
+                    <input type="password" id="password" placeholder="Password">
+
+                    <button type="button" id="signbutton">click</button>
+
+                    <p class="login-link">
+                        Don't have an account? <a href="#">Register</a>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+        
+        <link rel="stylesheet" href="{% static 'cssapp1/SignIn.css' %}">
+
+        <meta name="csrf-token" content="{{ csrf_token }}">
+        <script>
+            const csrftoken = document.querySelector('[name=csrf-token]').content;
+            let abortcontroller = null
+
+            document.getElementById('signbutton').addEventListener('click', function(){
+                let username = document.getElementById('username').value
+                let password = document.getElementById('password').value
+
+               
+                console.log(username, password)
+
+                if (!(username.trim() === '' ||  password.trim() === '')){
+                    if (abortcontroller){
+                        abortcontroller.abort()
+                    }
+
+                    abortcontroller = new AbortController
+                    SignInUsername(username, password, abortcontroller.signal)
+
+                }
+                else {
+                    console.log('Nopeee')
+                }
+            })
+
+            async function SignInUsername(username, password, signal){
+                
+                let response = await fetch('/ajax/SignInUsernameExists/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type':'application/json',
+                        'X-CSRFToken': csrftoken,
+                    },
+                    body: JSON.stringify({username:username, password:password}),
+                    signal:signal
+                })
+
+                let data = await response.json()
+                if (data.passed){
+                    window.location.replace('main/')
+                }
+                else{
+                    document.getElementById('SignInError').textContent = 'Either username or username is wrong'
+                }
+            }
+
+        </script>
+    </body>
+</html>

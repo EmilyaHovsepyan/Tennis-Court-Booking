@@ -1,0 +1,132 @@
+{% load static %}
+<html>
+    <head></head>
+    <body>
+        <h2>Welcome Emilya</h2>
+        <h2>Book your dream court In Yerevan</h2>
+        <div id="container"> </div>
+        
+        <div id="button_container">
+            <button id="previous" onclick="prevclicked()">←</button>
+            <button id="next" onclick="nextclicked()">→</button>
+        </div>
+        <link rel="stylesheet" href="{% static 'cssapp2/HomePage.css' %}">
+        <!-- <style>
+            body {
+                margin: 0;
+                padding: 20px;
+                background-color: rgb(237, 209, 214);
+            }
+            #container {
+                display: grid;
+                gap: 20px;
+  
+                grid-template-columns: 1fr 1fr;
+            }
+            .courtdiv {
+                background-color: white;
+                padding: 20px;
+                border-radius: 8px;
+                text-align: center;
+            }
+
+            #button-container {
+                text-align: center;
+            }
+            .hidden {
+                display: none;
+            }
+            .show {
+                /* background-color: plum; */
+                width: 200px;
+                height: 200px;
+            }
+            #previous {
+                width: 200px;
+                height: 200px;
+            }
+
+        </style> -->
+
+
+        <script>
+            let currentPage = 1
+            let buttonnext = document.getElementById('next')
+            let buttonprevious = document.getElementById('previous')
+
+            async function sendCurrentPage(page){
+                try {
+                    let response = await fetch(`/h/ajax/get_courts/?page=${currentPage}`)
+                    let data = await response.json()
+                    console.log(data)
+                    displayDivs(data)
+                    displayButtons(data)
+
+                }
+                catch (error) {
+                    console.log('Failed to do fetch')
+                }
+            }
+
+            function displayDivs(data){
+                console.log('We are in peak')
+                let container = document.getElementById('container')
+                container.innerHTML = ''
+                console.log(data)
+                let court = data.court
+
+                // let court = data.court
+                court.forEach(i => {
+                    let div = document.createElement('div')
+                    div.className = 'court-card'
+
+                    div.innerHTML = `
+                        <div class="court-img-wrapper">
+                            <img src ='${i.image || '/media/tennis_clubs/3.jpg'}' alt = "${i.name}">
+                        </div>
+                        <div class = "court-info">
+                            <h3>${i.name}</h3>
+                            <p class = 'location'>${i.location}</p>
+                            <p class = 'price'>${i.price} AMD </p>
+                        </div>
+                    `
+                    container.appendChild(div)
+                });
+            }
+
+            function displayButtons(data){
+                if (data.has_next){
+                    buttonnext.classList.remove('hidden')
+                    console.log('1')
+                }
+                else{
+                    buttonnext.classList.add('hidden')
+                    console.log('2')
+                }
+
+                if (data.has_previous){
+                    buttonprevious.classList.remove('hidden')
+                    console.log('3')
+                }
+                else{
+                    buttonprevious.classList.add('hidden')
+                    console.log('4')
+                }
+
+            }
+
+            function nextclicked() {
+                currentPage = currentPage + 1
+                sendCurrentPage(currentPage)
+            }
+
+            function prevclicked(){
+                currentPage = currentPage -1
+                sendCurrentPage(currentPage)
+
+            }
+
+            sendCurrentPage(currentPage)
+        </script>
+    </body>
+</html>

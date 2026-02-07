@@ -1,0 +1,109 @@
+{% load static %}
+<html>
+    <head>
+        <link rel="stylesheet" href="{% static 'cssapp4/CourtDetails.css' %}">
+    </head>
+    <body>
+        <div class="header">
+            <h2>Welcome Emilya</h2>
+            <h3>Book your dream court<br>In YEREVAN</h3>
+        </div>
+
+        <div class="container">
+            <div class="left">
+                <!-- Back arrow -->
+                <a href="/" class="back-arrow">←</a>
+                <div class="main-img-container">
+                    <img id="main-img" src="" alt="Main Court Image">
+                </div>
+
+                <div class="hover-images">
+                    <img id="hover1" src="" alt="">
+                    <img id="hover2" src="" alt="">
+                    <img id="hover3" src="" alt="">
+                </div>
+            </div>
+
+            <div class="right">
+                <div class="court-name" id="court-name"></div>
+                
+                <div class="court-info">
+                    <div class="info-row">
+                        <img src="{% static 'imageapp4/locate.png' %}" class="icon-img">
+                        <span id="court-location"></span>
+                    </div>
+                    <div class="info-row">
+                        <img src="{% static 'imageapp4/price.jpg' %}" class="icon-img">
+                        <span id="court-price"></span>
+            
+                    </div>
+                    <div class="info-row">
+                        <span id="court-quantity"></span>
+                    </div>
+                </div>
+
+                <div class="book-section">
+                    <button id="book-btn">Book A Court</button>
+                    <p class="select-date">*select a date</p>
+                    <div id="booking-days"></div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            const data =  JSON.parse("{{data|escapejs}}")
+            let time = null
+
+            document.getElementById('court-name').innerText = data.name;
+            document.getElementById('court-location').innerText = data.location;
+            document.getElementById('court-quantity').innerText = `Quantity: ${data.quantity} courts`;
+            document.getElementById('court-price').textContent = `${data.price} AMD/Hour`
+
+            document.getElementById('main-img').src = data.image_main
+            document.getElementById('hover1').src = data.image_hover1;
+            document.getElementById('hover2').src = data.image_hover2;
+            document.getElementById('hover3').src = data.image_hover3
+
+
+            const mainimg = document.getElementById('main-img')
+            document.querySelectorAll('.hover-images img').forEach(img => {
+                img.addEventListener('mouseenter', function(){
+                    if(time){
+                        clearTimeout(time)
+                    }
+                    mainimg.src = img.src
+                })
+                img.addEventListener('mouseleave', function() {
+                    if (time){
+                        clearTimeout(time)
+                    }
+                    time = setTimeout(() => {
+                        mainimg.src = data.image_main
+                    },200)
+                })
+            })
+
+
+
+            let bookingDiv = document.getElementById('booking-days')
+            
+            for (let i = 0; i < 7; i++ ){
+                let date = new Date()
+
+                date.setDate(date.getDate() + i)
+
+                let options = {day:'numeric', month:'long'}
+
+                let formatted = date.toLocaleDateString('en-GB', options)
+
+                console.log(formatted)
+
+                let button = document.createElement('button')
+                button.className = 'day-btn'
+                button.innerText = formatted
+
+                bookingDiv.appendChild(button)
+            }
+        </script>
+    </body>
+</html>

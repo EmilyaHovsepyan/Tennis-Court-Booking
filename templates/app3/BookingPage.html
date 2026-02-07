@@ -1,0 +1,252 @@
+<html>
+    <head>
+        <title>{{ court.name }}</title>
+        <style>
+            body {
+                font-family: Arial, Helvetica, sans-serif;
+                padding: 20px;
+                background-color: rgb(233, 233, 233);
+            }
+
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                background-color: rgb(255, 255, 255);
+                padding: 30px;
+                border-radius: 10px;
+            }
+
+            h2 {
+                text-align: center;
+                color: #000000;
+            }
+
+            .time-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: 15px;
+                margin-top: 20px;
+            }
+
+            .time-slot {
+                padding: 20px;
+                background-color: #ffffff;;
+                border: 2px solid #ddd;
+                border-radius: 8px;
+                text-align: center;
+                font-size: 16px;
+                font-weight: bold;
+            }
+
+            .reserved {
+                background-color: rgb(187, 140, 178);
+            }
+            .time-slot:not(.selected):not(.mouseselected):not(.reserved):hover{
+                background-color: rgb(197, 197, 197);
+            }
+            .selected {
+                background-color: rgb(7, 70, 187);
+                color: #ffffff;
+                font-weight: 600;
+            }
+
+            .mouseselected {
+                background-color: #cdcdcd;
+            
+            }
+
+            #ReserveButton {
+                background-color: #ffffff;
+                color: black;
+            }
+
+            
+        </style>
+
+        {{available|json_script:"my_available"}}
+        {{quantity|json_script:"my_quantity"}}
+
+    </head>
+    <body>
+        <div class="container">
+            <h2>{{court.name}}</h2>
+            <div class="court-info">
+                <p>Price ${{court.price}}</p>
+            </div>
+
+            <h2 style="text-align: center;">Available Time Slots</h2>
+            <button id="ReserveButton" type="button" onclick="Reserve()">Reserve</button>
+        
+            <div class="time-grid" id="timeGrid"></div>
+        </div>
+        <meta name="csrf-token" content="{{ csrf_token }}">
+        <script>
+        
+            const csrftoken = document.querySelector('[name=csrf-token]').content;
+            let slot = []
+            let index = 0
+            let time = ''
+            let startindex = null
+            let endindex = null
+            let mouseindex = null
+
+            const mapp = JSON.parse(document.getElementById('my_available').textContent)
+            const quantity = JSON.parse(document.getElementById('my_quantity').textContent)
+            console.log(mapp)
+            console.log(quantity)
+
+            function generateTimeSlots(){
+                const container = document.getElementById('timeGrid')
+                for (let hour = 10; hour < 20; hour ++){
+                    ['00', '30'].forEach(minute => {
+                        let div1 = document.createElement('div')
+                        div1.className = 'time-slot';
+                        time = `${hour.toString()}:${minute}`
+                        div1.textContent = time
+                        if (time in mapp && mapp[time] >= quantity){
+                            div1.classList.add('reserved')
+                        }
+                        else {
+                            div1.dataset.index = index
+                            div1.addEventListener('click', (e) => HandleClick(e.target.dataset.index))
+                            div1.addEventListener('mouseenter', (e) => MouseOnDiv(e.target.dataset.index))                     
+                            slot.push(div1)
+                            index ++
+                        }
+                        // div1.textContent = `${hour.toString()}:${minute}`;
+                        container.appendChild(div1)
+                    })  
+                }
+                console.log(slot)
+            }
+
+
+            function MouseOnDiv(index) {
+                console.log('hehehehe')
+                if (endindex !== null || startindex === null){
+                    return
+                }
+
+                if (mouseindex !== null){
+                    console.log(777)
+                    console.log(slot)
+                    RemoveHighligh(startindex, mouseindex, 'mouseselected')
+                }
+               
+                index = Number(index)
+                mouseindex = index
+                console.log('champions')
+                for (let i = startindex+1; i <= index; i++){
+                    slot[i].classList.add('mouseselected')
+                }
+            }
+
+            function HandleClick(index){
+                index = Number(index)
+                console.log('SHHHHHh')
+
+
+                console.log(index)
+
+                if(endindex !== null && startindex !== null){
+                    Remove2Highligh(startindex, endindex)
+                    RemoveHighligh(startindex, endindex, 'mouseselected')
+                    endindex = null
+                    startindex = null
+                }
+                else if (startindex === null){
+                    console.log(111)
+                    startindex = index
+                    Add2Highligh(startindex, startindex)
+                    // HighlightRange(startindex, startindex, 'selected')
+                }
+                else if( endindex === null) {
+                    console.log(222)
+
+                    if(index <= startindex){
+                        
+                        Remove2Highligh(startindex, startindex)
+                        startindex = index
+                        Add2Highligh(startindex, startindex)
+                        // startindex = index
+                        endindex = null
+                    }
+                    else if(index - startindex == 1 ) {
+                        return
+                    }
+                    else{
+                        endindex = index
+                        slot[index].classList.remove('mouseselected')
+                        Add2Highligh(startindex, endindex)
+                    }
+                    // console.log(slot)
+                    console.log(startindex, endindex)
+                    // console.log(index)
+                    // console.log(startindex)
+                    // console.log(222)   
+                }
+            }
+
+            function HighlightRange(start, end){
+                // console.log('vsegda 1')
+
+                // console.log(start)
+                // console.log(end)
+                // console.log('vsegda 1')
+                // console.log(slot[start])
+                for (let i=start+1;i < end;i++){
+                    slot[i].classList.add('mouseselected')
+                }
+            }
+
+            function RemoveHighligh(start, end, classname){
+                console.log(888)
+                console.log(start)
+                console.log(end)
+                console.log(classname)
+                for(let i = start; i <= end; i++){
+                    slot[i].classList.remove(`${classname}`)
+                }
+            }
+            function Remove2Highligh(start, end) {
+                slot[start].classList.remove('selected')
+                slot[end].classList.remove('selected')
+            }
+
+            function Add2Highligh(start, end){
+                slot[start].classList.add('selected')
+                slot[end].classList.add('selected')
+            }
+
+            async function Reserve(){
+                console.log('button clicked')
+
+                if (startindex && endindex){
+                    let res = []
+                    for(let i = startindex+1; i < endindex; i++){
+                        console.log('mmmmmm')
+                        res.push(slot[i].textContent)
+                    }
+
+                    console.log(true)
+                    console.log(res)
+                    let response = await fetch('/w/ajax/bookcourt', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type':'application/json',
+                            'X-CSRFToken':csrftoken
+                        },
+                        body: JSON.stringify({'timetable':res})
+                    })
+                    let data = await response.json()
+                    if (data.success){
+                        location.reload()
+                        console.log('jjj')
+                    }
+                }
+            }
+
+            generateTimeSlots()
+        </script>
+    </body>
+</html>

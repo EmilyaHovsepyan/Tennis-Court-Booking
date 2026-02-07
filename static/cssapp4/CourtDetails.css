@@ -1,0 +1,210 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+}
+
+/* Blue header */
+.header {
+    background-color: #0d33cc;
+    color: white;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header h2 {
+    font-size: 32px;
+    font-weight: normal;
+}
+
+.header h3 {
+    font-size: 20px;
+    font-weight: normal;
+    text-align: right;
+    line-height: 1.4;
+}
+
+/* Container */
+.container {
+    display: flex;
+    max-width: 1600px;
+    height: auto;
+    margin: 0 auto;
+    padding: 40px;
+    gap: 60px;
+    background-color: white;
+    min-height: calc(100vh - 80px);
+}
+
+/* Left section */
+.left {
+    flex: 1;
+    position: relative;
+}
+
+.back-arrow {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    font-size: 32px;
+    color: #333;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.back-arrow:hover {
+    color: #0d33cc;
+}
+.main-img-container {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: #f0f0f0;
+}
+
+#main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.hover-images {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.hover-images img {
+    width: 32%;
+
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: transform 0.2s, border 0.2s;
+    border: 2px solid transparent;
+}
+
+.hover-images img:hover {
+    transform: scale(1.05);
+    border-color: #0d33cc;
+}
+
+/* Right section */
+.right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    background-color: #f9f9f9;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.court-name {
+    font-size: 42px;
+    font-weight: bold;
+    color: #0d33cc;
+    margin-bottom: 10px;
+}
+
+.court-info {
+    font-size: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    color: #333;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.icon-img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+/* Book section */
+.book-section {
+    margin-top: 20px;
+    padding: 25px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+#book-btn {
+    background-color: #0d33cc;
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#book-btn:hover {
+    background-color: #081a99;
+}
+
+.select-date {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+#booking-days {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.day-btn {
+    padding: 12px 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.day-btn:hover {
+    background-color: #f0f0f0;
+    border-color: #0d33cc;
+}
+
+.day-btn.selected {
+    background-color: #0d33cc;
+    color: white;
+    border-color: #0d33cc;
+}
+
+@media (max-width: 900px) {
+    .container {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .left, .right {
+        width: 100%;
+    }
+}
